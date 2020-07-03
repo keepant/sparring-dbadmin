@@ -9,13 +9,13 @@ export default {
   primary: {
     contrastText: white,
     dark: colors.indigo[900],
-    main: colors.deepOrange[600],
+    main: '#f44336',
     light: colors.indigo[100]
   },
   secondary: {
     contrastText: white,
     dark: colors.blue[900],
-    main: colors.blue['A400'],
+    main: '#aa2e25',
     light: colors.blue['A400']
   },
   success: {

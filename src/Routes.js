@@ -6,8 +6,7 @@ import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
   Dashboard as DashboardView,
-  ProductList as ProductListView,
-  UserList as UserListView,
+  OwnerList as OwnerListView,
   Typography as TypographyView,
   Icons as IconsView,
   Account as AccountView,
@@ -32,16 +31,10 @@ const Routes = () => {
         path="/dashboard"
       />
       <RouteWithLayout
-        component={UserListView}
+        component={OwnerListView}
         exact
         layout={MainLayout}
-        path="/users"
-      />
-      <RouteWithLayout
-        component={ProductListView}
-        exact
-        layout={MainLayout}
-        path="/products"
+        path="/owners"
       />
       <RouteWithLayout
         component={TypographyView}
