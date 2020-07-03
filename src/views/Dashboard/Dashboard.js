@@ -5,8 +5,8 @@ import { Grid } from '@material-ui/core';
 import {
   Owner,
   TotalUsers,
-  TasksProgress,
-  TotalProfit,
+  OwerNotVerified,
+  OwnerVerified,
   LatestSales,
   UsersByDevice,
 } from './components';
@@ -51,7 +51,7 @@ const Dashboard = () => {
           xl={3}
           xs={12}
         >
-          <TasksProgress />
+          <OwerNotVerified />
         </Grid>
         <Grid
           item
@@ -60,7 +60,7 @@ const Dashboard = () => {
           xl={3}
           xs={12}
         >
-          <TotalProfit />
+          <OwnerVerified />
         </Grid>
         <Grid
           item

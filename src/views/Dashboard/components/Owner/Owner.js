@@ -3,11 +3,11 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
-import MoneyIcon from '@material-ui/icons/Money';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: '80%'
+    height: '90%'
   },
   content: {
     alignItems: 'center',
@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
     fontWeight: 700
   },
   avatar: {
-    backgroundColor: theme.palette.error.main,
+    backgroundColor: theme.palette.info.main,
     height: 56,
     width: 56
   },
@@ -55,7 +55,7 @@ const Owner = props => {
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <MoneyIcon className={classes.icon} />
+              <SupervisorAccountIcon className={classes.icon} />
             </Avatar>
           </Grid>
         </Grid>
