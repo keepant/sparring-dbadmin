@@ -4,6 +4,9 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import PeopleIcon from '@material-ui/icons/PeopleOutlined';
+import { getCountUsers } from 'graphql/queries/courts';
+import { SemipolarLoading } from 'react-loadingg';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -43,6 +46,16 @@ const TotalUsers = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const { loading, error, data } = useQuery(getCountUsers);
+  
+  if(loading) {
+    return <SemipolarLoading />
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }  
 
   return (
     <Card
@@ -63,7 +76,7 @@ const TotalUsers = props => {
             >
               TOTAL USERS
             </Typography>
-            <Typography variant="h3">1,600</Typography>
+            <Typography variant="h3">{data['users_aggregate']['aggregate']['count']}</Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>

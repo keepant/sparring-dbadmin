@@ -10,6 +10,9 @@ import {
   Avatar
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
+import { getCountNotVerifiedOwner } from 'graphql/queries/courts';
+import { SemipolarLoading } from 'react-loadingg';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,6 +44,17 @@ const OwerNotVerified = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const { loading, error, data } = useQuery(getCountNotVerifiedOwner);
+  
+  if(loading) {
+    return <SemipolarLoading />
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }  
+
 
   return (
     <Card
@@ -61,7 +75,7 @@ const OwerNotVerified = props => {
             >
               OWNER NOT VERFIED
             </Typography>
-            <Typography variant="h3">75.5%</Typography>
+            <Typography variant="h3">{data['owners_aggregate']['aggregate']['count']}</Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>

@@ -3,12 +3,7 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Grid,
-  Button,
-  TextField,
-  Typography
-} from '@material-ui/core';
+import { Grid, Button, TextField, Typography } from '@material-ui/core';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
@@ -164,7 +159,8 @@ const SignIn = props => {
     }));
   };
 
-  const[error, setError] = useState("");
+  const [error, setError] = useState('');
+  var store = require('store');
 
   const handleSignIn = event => {
     event.preventDefault();
@@ -173,17 +169,51 @@ const SignIn = props => {
       .signInWithEmailAndPassword(
         formState.values.email,
         formState.values.password
-      ).then(function(result) {
-        console.log("login success");
-        history.push('/dashboard');
+      )
+      .then(function(result) {
+        console.log('login success');
+
+        firebase.auth().onAuthStateChanged(async user => {
+          if (user) {
+            const token = await user.getIdToken();
+            const idTokenResult = await user.getIdTokenResult();
+            const hasuraClaim =
+              idTokenResult.claims['https://hasura.io/jwt/claims'];
+
+            if (hasuraClaim) {
+              console.log(user.uid);
+              store.set('token', token);
+              store.set('userId', user.uid);
+              console.log(
+                'Token: ' +
+                  token +
+                  ' IDtoken: ' +
+                  idTokenResult +
+                  ' hasura: ' +
+                  hasuraClaim
+              );
+              history.push('/dashboard');
+            } else {
+              // Check if refresh is required.
+              const metadataRef = firebase
+                .database()
+                .ref('metadata/' + user.uid + '/refreshTime');
+
+              metadataRef.on('value', async data => {
+                if (!data.exists) return;
+                // Force refresh to pick up the latest custom claims changes.
+                await user.getIdToken(true);
+              });
+            }
+          }
+        });
+
         //console.log(result);
       })
       .catch(function(e) {
-        console.log("error code: "+e.code+"\nmessage: "+e.message);
+        console.log('error code: ' + e.code + '\nmessage: ' + e.message);
         setError(e.message);
       });
-
-    
   };
 
   const hasError = field =>
@@ -212,9 +242,7 @@ const SignIn = props => {
         </Grid>
         <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
-            <div className={classes.contentHeader}>
-             
-            </div>
+            <div className={classes.contentHeader}></div>
             <div className={classes.contentBody}>
               <form className={classes.form} onSubmit={handleSignIn}>
                 <Typography className={classes.title} variant="h2">

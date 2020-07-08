@@ -6,4 +6,3 @@ export { default as OwnerList } from './OwnerList';
 export { default as Settings } from './Settings';
 export { default as SignIn } from './SignIn';
 export { default as SignUp } from './SignUp';
-export { default as Typography } from './Typography';

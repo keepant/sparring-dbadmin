@@ -3,11 +3,14 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
-import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { getCountVerifiedOwner } from 'graphql/queries/courts';
+import { SemipolarLoading } from 'react-loadingg';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    height: '90%',
+    height: '90%'
   },
   content: {
     alignItems: 'center',
@@ -32,36 +35,36 @@ const OwnerVerified = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const { loading, error, data } = useQuery(getCountVerifiedOwner);
+
+  if (loading) {
+    return <SemipolarLoading />;
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent>
-        <Grid
-          container
-          justify="space-between"
-        >
+        <Grid container justify="space-between">
           <Grid item>
             <Typography
               className={classes.title}
               color="inherit"
               gutterBottom
-              variant="body2"
-            >
+              variant="body2">
               OWNER VERIFIED
             </Typography>
-            <Typography
-              color="inherit"
-              variant="h3"
-            >
-              $23,200
+            <Typography color="inherit" variant="h3">
+              {data['owners_aggregate']['aggregate']['count']}
             </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
-              <AttachMoneyIcon className={classes.icon} />
+              <CheckCircleIcon className={classes.icon} />
             </Avatar>
           </Grid>
         </Grid>
