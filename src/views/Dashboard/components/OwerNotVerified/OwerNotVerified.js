@@ -10,7 +10,7 @@ import {
   Avatar
 } from '@material-ui/core';
 import CancelIcon from '@material-ui/icons/Cancel';
-import { getCountNotVerifiedOwner } from 'graphql/queries/courts';
+import { getCountNotVerifiedOwner } from 'graphql/queries/count';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
 

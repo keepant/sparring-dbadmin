@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
-import { getCountOwners } from 'graphql/queries/courts';
+import { getCountOwners } from 'graphql/queries/count';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import { getCountVerifiedOwner } from 'graphql/queries/courts';
+import { getCountVerifiedOwner } from 'graphql/queries/count';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
 

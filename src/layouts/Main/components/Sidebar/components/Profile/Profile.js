@@ -4,6 +4,9 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Avatar, Typography } from '@material-ui/core';
+import { getAdmin } from 'graphql/queries/admin';
+import { SemipolarLoading } from 'react-loadingg';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,18 +28,34 @@ const Profile = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  var store = require('store');
+  const userId = store.get('userId');
+  const { loading, error, data } = useQuery(getAdmin, {
+    variables: {
+      'id': userId  
+    }
+  });
+
+  if (loading) {
+    return <SemipolarLoading />;
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }
 
   const user = {
     name: 'sparring </dev>',
-    avatar: '/images/avatars/avatar_11.png',
+    avatar: '/images/avatars/pp.png',
     bio: 'Admin'
   };
 
+  var admin = data['admin'][0];
+  
+
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <Avatar
         alt="Person"
         className={classes.avatar}
@@ -44,13 +63,10 @@ const Profile = props => {
         src={user.avatar}
         to="/dashboard"
       />
-      <Typography
-        className={classes.name}
-        variant="h4"
-      >
-        {user.name}
+      <Typography className={classes.name} variant="h4">
+        {admin.name}
       </Typography>
-      <Typography variant="body2">{user.bio}</Typography>
+      <Typography variant="body2">{admin.role.toUpperCase()}</Typography>
     </div>
   );
 };
