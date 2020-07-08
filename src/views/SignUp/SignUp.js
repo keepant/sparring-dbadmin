@@ -16,9 +16,6 @@ import firebase from 'firebase/app';
 import "firebase/auth";
 import "firebase/database";
 import "firebase/functions";
-import firebaseConfig from 'helpers/firebase.config';
-
-firebase.initializeApp(firebaseConfig);
 
 const schema = {
   fullName: {
