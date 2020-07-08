@@ -6,11 +6,9 @@ import { makeStyles } from '@material-ui/styles';
 import {
   Grid,
   Button,
-  IconButton,
   TextField,
   Typography
 } from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
@@ -147,10 +145,6 @@ const SignIn = props => {
     }));
   }, [formState.values]);
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   const handleChange = event => {
     event.persist();
 
@@ -181,14 +175,15 @@ const SignIn = props => {
         formState.values.password
       ).then(function(result) {
         console.log("login success");
-        console.log(result);
+        history.push('/dashboard');
+        //console.log(result);
       })
       .catch(function(e) {
         console.log("error code: "+e.code+"\nmessage: "+e.message);
         setError(e.message);
       });
 
-    history.push('/');
+    
   };
 
   const hasError = field =>
@@ -218,9 +213,7 @@ const SignIn = props => {
         <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
             <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
+             
             </div>
             <div className={classes.contentBody}>
               <form className={classes.form} onSubmit={handleSignIn}>

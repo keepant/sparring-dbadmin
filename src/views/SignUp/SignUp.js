@@ -190,8 +190,8 @@ const SignUp = props => {
       displayName: formState.values.fullName,
       photoURL: 'https://i.ibb.co/cYcKg83/ha.png',
     }).then(function(result) {
-      var res = result.data.text;
-      console.log(res);
+      console.log("register success");
+      history.push('/sign-in');
     }).catch(function(e) {
       console.log("Error code: "+e.code+"\nMessage: "+e.message+"\nDetails: "+e.details);
       setError(e.message);
