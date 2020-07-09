@@ -6,6 +6,10 @@ import { makeStyles } from '@material-ui/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { addCourtFacility } from 'graphql/mutations/court';
 import { getCourtFacilities } from 'graphql/queries/court';
+import Alert from '@material-ui/lab/Alert';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   Card,
   CardHeader,
@@ -34,6 +38,7 @@ const InputFacility = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -98,6 +103,22 @@ const InputFacility = props => {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
+      <Collapse in={open}>
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }>
+          Facility added!
+        </Alert>
+      </Collapse>
       <form
         autoComplete="off"
         onSubmit={e => {
@@ -108,6 +129,7 @@ const InputFacility = props => {
             }
           });
 
+          setOpen(true);
           formState.values.name = '';
         }}>
         <CardHeader subheader="Add court facility to app" title="Facility" />

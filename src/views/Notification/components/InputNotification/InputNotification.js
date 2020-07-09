@@ -6,6 +6,11 @@ import { makeStyles } from '@material-ui/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { addNotification } from 'graphql/mutations/notification';
 //import { getNotification } from 'graphql/queries/notification';
+import Alert from '@material-ui/lab/Alert';
+import IconButton from '@material-ui/core/IconButton';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+
 import {
   Card,
   CardHeader,
@@ -39,10 +44,13 @@ const schema = {
   }
 };
 
+
+
 const InputFacility = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
 
   const [formState, setFormState] = useState({
     isValid: false,
@@ -107,6 +115,22 @@ const InputFacility = props => {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
+      <Collapse in={open}>
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setOpen(false);
+              }}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }>
+          Notification sended!
+        </Alert>
+      </Collapse>
       <form
         autoComplete="off"
         onSubmit={e => {
@@ -117,6 +141,8 @@ const InputFacility = props => {
               content: formState.values.content
             }
           });
+
+          setOpen(true);
 
           formState.values.title = '';
           formState.values.content = '';
