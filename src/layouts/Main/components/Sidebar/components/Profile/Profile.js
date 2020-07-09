@@ -7,6 +7,7 @@ import { Avatar, Typography } from '@material-ui/core';
 import { getAdmin } from 'graphql/queries/admin';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,11 +26,12 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Profile = props => {
-  const { className, ...rest } = props;
+  const { className, history, ...rest } = props;
 
   const classes = useStyles();
   var store = require('store');
   const userId = store.get('userId');
+
   const { loading, error, data } = useQuery(getAdmin, {
     variables: {
       'id': userId  
@@ -42,7 +44,13 @@ const Profile = props => {
 
   if (error) {
     console.error(error);
-    return <div>Error!</div>;
+    if (
+      error.message.includes('GraphQL error: Could not verify JWT: JWSError')
+    ) {
+      history.replace('/');
+    }
+
+    return <div>erro</div>
   }
 
   const user = {
@@ -75,4 +83,4 @@ Profile.propTypes = {
   className: PropTypes.string
 };
 
-export default Profile;
+export default withRouter(Profile);

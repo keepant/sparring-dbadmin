@@ -7,6 +7,7 @@ import PeopleIcon from '@material-ui/icons/PeopleOutlined';
 import { getCountUsers } from 'graphql/queries/count';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -43,40 +44,41 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const TotalUsers = props => {
-  const { className, ...rest } = props;
+  const { className, history, ...rest } = props;
 
   const classes = useStyles();
   const { loading, error, data } = useQuery(getCountUsers);
-  
-  if(loading) {
-    return <SemipolarLoading />
+
+  if (loading) {
+    return <SemipolarLoading />;
   }
 
   if (error) {
     console.error(error);
-    return <div>Error!</div>;
-  }  
+    if (
+      error.message.includes('GraphQL error: Could not verify JWT: JWSError')
+    ) {
+      history.replace('/');
+    }
+
+    return <div>{error.message}</div>;
+  }
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardContent>
-        <Grid
-          container
-          justify="space-between"
-        >
+        <Grid container justify="space-between">
           <Grid item>
             <Typography
               className={classes.title}
               color="textSecondary"
               gutterBottom
-              variant="body2"
-            >
+              variant="body2">
               TOTAL USERS
             </Typography>
-            <Typography variant="h3">{data['users_aggregate']['aggregate']['count']}</Typography>
+            <Typography variant="h3">
+              {data['users_aggregate']['aggregate']['count']}
+            </Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -93,4 +95,4 @@ TotalUsers.propTypes = {
   className: PropTypes.string
 };
 
-export default TotalUsers;
+export default withRouter(TotalUsers);
