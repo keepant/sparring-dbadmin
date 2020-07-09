@@ -7,6 +7,7 @@ import { Grid, Button, TextField, Typography } from '@material-ui/core';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import { SemipolarLoading } from 'react-loadingg';
 
 const schema = {
   email: {
@@ -160,10 +161,12 @@ const SignIn = props => {
   };
 
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   var store = require('store');
 
   const handleSignIn = event => {
     event.preventDefault();
+    setLoading(true);
     firebase
       .auth()
       .signInWithEmailAndPassword(
@@ -221,6 +224,7 @@ const SignIn = props => {
 
   return (
     <div className={classes.root}>
+      { loading && <SemipolarLoading />}
       <Grid className={classes.grid} container>
         <Grid className={classes.quoteContainer} item lg={5}>
           <div className={classes.quote}>
