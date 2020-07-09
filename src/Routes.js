@@ -13,7 +13,8 @@ import {
   SignUp as SignUpView,
   SignIn as SignInView,
   NotFound as NotFoundView,
-  Facility as FacilityView
+  Facility as FacilityView,
+  Notification as NotificationView
 } from './views';
 
 const Routes = () => {
@@ -35,6 +36,12 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/owners"
+      />
+       <RouteWithLayout
+        component={NotificationView}
+        exact
+        layout={MainLayout}
+        path="/notification"
       />
       <RouteWithLayout
         component={IconsView}

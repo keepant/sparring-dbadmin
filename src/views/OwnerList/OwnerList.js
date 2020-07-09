@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-
 import { UsersToolbar, UsersTable } from './components';
 import { getAllOwners } from 'graphql/queries/owner';
 import { SemipolarLoading } from 'react-loadingg';
