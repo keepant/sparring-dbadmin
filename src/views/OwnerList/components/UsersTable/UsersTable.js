@@ -109,7 +109,7 @@ const UsersTable = props => {
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      {moment(user.createdAt).format('DD/MM/YYYY')}
+                      {moment(user.created_at).format('DD/MM/YYYY')}
                     </TableCell>
                     <TableCell>
                       <BtnInfo
@@ -122,10 +122,10 @@ const UsersTable = props => {
                       </BtnInfo>
                       <FsLightbox
                         toggler={toggler}
-                        sources={[user.avatarUrl]}
+                        sources={[user.owner_doc.id_card]}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell>                      
                       <BtnInfo
                         size="small"
                         variant="contained"
@@ -136,7 +136,7 @@ const UsersTable = props => {
                       </BtnInfo>
                       <FsLightbox
                         toggler={toggler}
-                        sources={[user.avatarUrl]}
+                        sources={[user.owner_doc.photo]}
                       />
                     </TableCell>
                     <TableCell>
@@ -151,23 +151,17 @@ const UsersTable = props => {
                       </BtnInfo>
                       <FsLightbox
                         toggler={toggler}
-                        sources={[user.avatarUrl]}
+                        sources={[user.owner_doc.selfie_with_id]}
                       />
                     </TableCell>
                     <TableCell>
                       <IconButton
                         aria-label="verify"
                         className={classes.iconBtn}>
-                        <CheckCircleIcon
-                          style={{ color: colors.green[600] }}
-                          fontSize="medium"
-                        />
+                        <CheckCircleIcon style={{ color: colors.green[600] }} />
                       </IconButton>
                       <IconButton aria-label="not" className={classes.iconBtn}>
-                        <CancelRoundedIcon
-                          style={{ color: colors.red[600] }}
-                          fontSize="medium"
-                        />
+                        <CancelRoundedIcon style={{ color: colors.red[600] }} />
                       </IconButton>
                     </TableCell>
                   </TableRow>

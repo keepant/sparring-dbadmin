@@ -31,7 +31,7 @@ export const getCountNotVerifiedOwner = gql`
 `;
 
 export const getCountVerifiedOwner = gql`
-  query getCountVerifiedOwner{
+  query getCountVerifiedOwner {
     owners_aggregate(where: { account_status: { _eq: "verified" } }) {
       aggregate {
         count

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 
 import { UsersToolbar, UsersTable } from './components';
-import mockData from './data';
+import { getAllOwners } from 'graphql/queries/owner';
+import { SemipolarLoading } from 'react-loadingg';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -16,7 +18,18 @@ const useStyles = makeStyles(theme => ({
 const OwnerList = () => {
   const classes = useStyles();
 
-  const [users] = useState(mockData);
+  const { loading, error, data } = useQuery(getAllOwners);
+
+  if (loading) {
+    return <SemipolarLoading />;
+  }
+
+  if (error) {
+    console.error(error);
+    return <div>Error!</div>;
+  }
+
+  const users = data.owners;
 
   return (
     <div className={classes.root}>
