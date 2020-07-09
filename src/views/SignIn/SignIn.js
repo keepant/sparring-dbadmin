@@ -195,7 +195,7 @@ const SignIn = props => {
                   ' hasura: ' +
                   hasuraClaim
               );
-              history.push('/dashboard');
+              history.replace('/dashboard');
             } else {
               // Check if refresh is required.
               const metadataRef = firebase

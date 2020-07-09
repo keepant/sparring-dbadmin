@@ -9,6 +9,8 @@ import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
 import firebase from 'firebase/app';
 import "firebase/auth";
+import { withRouter } from 'react-router-dom';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,11 +31,13 @@ const Topbar = props => {
   const classes = useStyles();
 
   const [notifications] = useState([]);
+  var store = require('store');
 
   const handleOnClick = () => {
     firebase.auth().signOut().then(function() {
       console.log("Logout success");
-      history.push('/sign-in');
+      store.clearAll();
+      history.replace('/sign-in');
     }).catch(function(e) {
       console.log("cannot logout. error: "+e)
     })
@@ -85,7 +89,9 @@ const Topbar = props => {
 
 Topbar.propTypes = {
   className: PropTypes.string,
-  onSidebarOpen: PropTypes.func
+  onSidebarOpen: PropTypes.func,
+  history: PropTypes.object
 };
 
-export default Topbar;
+
+export default withRouter(Topbar);
