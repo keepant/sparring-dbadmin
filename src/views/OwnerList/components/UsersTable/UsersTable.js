@@ -10,7 +10,12 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
 import IconButton from '@material-ui/core/IconButton';
 import { colors } from '@material-ui/core';
-import FsLightbox from 'fslightbox-react';
+import Lightbox from 'react-awesome-lightbox';
+import 'react-awesome-lightbox/build/style.css';
+import firebase from 'firebase/app';
+import 'firebase/database';
+import 'firebase/storage';
+import { CircleToBlockLoading } from 'react-loadingg';
 
 import {
   Card,
@@ -76,10 +81,17 @@ const UsersTable = props => {
     }
   }))(Button);
 
-  const [toggler, setToggler] = useState(false);
+  const [urlId, setUrlId] = useState('');
+  const [urlPhoto, setUrlPhoto] = useState('');
+  const [urlWithId, setUrlWithId] = useState('');
+  const [showId, setShowId] = useState(false);
+  const [showPhoto, setShowPhoto] = useState(false);
+  const [showWithId, setShowWithId] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
+      {loading && <CircleToBlockLoading />}
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -116,28 +128,58 @@ const UsersTable = props => {
                         size="small"
                         variant="contained"
                         color="primary"
-                        onClick={() => setToggler(!toggler)}
+                        onClick={() => {
+                          const storage = firebase.storage().ref();
+
+                          storage
+                            .child('verify/' + user.owner_doc.id_card)
+                            .getDownloadURL()
+                            .then(url => setUrlId(url));
+                          setShowId(true);
+                          setLoading(true);
+                        }}
                         startIcon={<VisibilityIcon />}>
                         Show
                       </BtnInfo>
-                      <FsLightbox
-                        toggler={toggler}
-                        sources={[user.owner_doc.id_card]}
-                      />
+                      {showId && (
+                        <Lightbox
+                          image={urlId}
+                          title="ID Card (KTP)"
+                          onClose={() => {
+                            setShowId(false);
+                            setLoading(false);
+                          }}
+                        />
+                      )}
                     </TableCell>
-                    <TableCell>                      
+                    <TableCell>
                       <BtnInfo
                         size="small"
                         variant="contained"
                         color="primary"
-                        onClick={() => setToggler(!toggler)}
+                        onClick={() => {
+                          const storage = firebase.storage().ref();
+
+                          storage
+                            .child('verify/' + user.owner_doc.photo)
+                            .getDownloadURL()
+                            .then(url => setUrlPhoto(url));
+                          setShowPhoto(true);
+                          setLoading(true);
+                        }}
                         startIcon={<VisibilityIcon />}>
                         Show
                       </BtnInfo>
-                      <FsLightbox
-                        toggler={toggler}
-                        sources={[user.owner_doc.photo]}
-                      />
+                      {showPhoto && (
+                        <Lightbox
+                          image={urlPhoto}
+                          title="Photo selfie"
+                          onClose={() => {
+                            setShowPhoto(false);
+                            setLoading(false);
+                          }}
+                        />
+                      )}
                     </TableCell>
                     <TableCell>
                       {' '}
@@ -145,14 +187,29 @@ const UsersTable = props => {
                         size="small"
                         variant="contained"
                         color="primary"
-                        onClick={() => setToggler(!toggler)}
+                        onClick={() => {
+                          const storage = firebase.storage().ref();
+
+                          storage
+                            .child('verify/' + user.owner_doc.selfie_with_id)
+                            .getDownloadURL()
+                            .then(url => setUrlWithId(url));
+                          setShowWithId(true);
+                          setLoading(true);
+                        }}
                         startIcon={<VisibilityIcon />}>
                         Show
                       </BtnInfo>
-                      <FsLightbox
-                        toggler={toggler}
-                        sources={[user.owner_doc.selfie_with_id]}
-                      />
+                      {showWithId && (
+                        <Lightbox
+                          image={urlWithId}
+                          title="Photo With ID Card"
+                          onClose={() => {
+                            setShowWithId(false);
+                            setLoading(false);
+                          }}
+                        />
+                      )}
                     </TableCell>
                     <TableCell>
                       <IconButton

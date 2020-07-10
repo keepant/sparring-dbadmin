@@ -4,6 +4,7 @@ import { UsersToolbar, UsersTable } from './components';
 import { getAllOwners } from 'graphql/queries/owner';
 import { SemipolarLoading } from 'react-loadingg';
 import { useQuery } from '@apollo/react-hooks';
+import { withRouter } from 'react-router-dom';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,9 +15,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const OwnerList = () => {
+const OwnerList = (props) => {
+  const history = props;
   const classes = useStyles();
-
   const { loading, error, data } = useQuery(getAllOwners);
 
   if (loading) {
@@ -25,7 +26,13 @@ const OwnerList = () => {
 
   if (error) {
     console.error(error);
-    return <div>Error!</div>;
+    if (
+      error.message.includes('GraphQL error: Could not verify JWT: JWSError')
+    ) {
+      history.replace('/');
+    }
+
+    return <div>Error! Please reload page.</div>;
   }
 
   const users = data.owners;
@@ -40,4 +47,4 @@ const OwnerList = () => {
   );
 };
 
-export default OwnerList;
+export default withRouter(OwnerList);
