@@ -44,8 +44,6 @@ const schema = {
   }
 };
 
-
-
 const InputFacility = props => {
   const { className, ...rest } = props;
 
@@ -113,6 +111,37 @@ const InputFacility = props => {
     onCompleted: resetInput
   });
 
+  var sendNotification = function(data) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: 'Basic OGZiYjE4MGMtZDdhYS00M2U2LWIxNTUtZTA5MDhiZjYyODdk'
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers
+    };
+
+    var https = require('https');
+    var req = https.request(options, function(res) {
+      res.on('data', function(data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function(e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  };
+
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <Collapse in={open}>
@@ -143,6 +172,15 @@ const InputFacility = props => {
           });
 
           setOpen(true);
+
+          var message = {
+            app_id: '1a92dc26-0954-4d02-aa1d-a8af75f218bb',
+            headings: { en: formState.values.title },
+            contents: { en: formState.values.content },
+            included_segments: ['All']
+          };
+        
+          sendNotification(message);
 
           formState.values.title = '';
           formState.values.content = '';
