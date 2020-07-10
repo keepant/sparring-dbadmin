@@ -9,14 +9,26 @@ import VisibilityIcon from '@material-ui/icons/Visibility';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import CancelRoundedIcon from '@material-ui/icons/CancelRounded';
 import IconButton from '@material-ui/core/IconButton';
-import { colors } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import Collapse from '@material-ui/core/Collapse';
+import CloseIcon from '@material-ui/icons/Close';
+import {
+  colors,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Slide
+} from '@material-ui/core';
 import Lightbox from 'react-awesome-lightbox';
 import 'react-awesome-lightbox/build/style.css';
 import firebase from 'firebase/app';
 import 'firebase/database';
 import 'firebase/storage';
 import { CircleToBlockLoading } from 'react-loadingg';
-
+import { useMutation } from '@apollo/react-hooks';
+import { verifyOwner, notVerifyOwner } from 'graphql/mutations/owner';
 import {
   Card,
   CardActions,
@@ -54,6 +66,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const UsersTable = props => {
   const { className, users, ...rest } = props;
 
@@ -89,9 +105,60 @@ const UsersTable = props => {
   const [showWithId, setShowWithId] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [open, setOpen] = useState(false);
+  const [openNot, setOpenNot] = useState(false);
+  const [alertSuccess, setAlertSuccess] = useState(false);
+  const [alertFailed, setAlertFailed] = useState(false);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClickOpenNot = () => {
+    setOpenNot(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setOpenNot(false);
+  };
+
+  const [toggleVerifiedOwner] = useMutation(verifyOwner);
+  const [toggleNotVerified] = useMutation(notVerifyOwner);
+
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       {loading && <CircleToBlockLoading />}
+      <Collapse in={alertSuccess}>
+        <Alert
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={() => {
+                setAlertSuccess(false);
+              }}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }>
+          Owner verified!
+        </Alert>
+      </Collapse>
+      <Collapse in={alertFailed}>
+        <Alert
+          severity="info"
+          action={
+            <IconButton
+              aria-label="close"
+              size="small"
+              onClick={() => {
+                setAlertFailed(false);
+              }}>
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }>
+          Owner data refused!
+        </Alert>
+      </Collapse>
       <CardContent className={classes.content}>
         <PerfectScrollbar>
           <div className={classes.inner}>
@@ -216,6 +283,7 @@ const UsersTable = props => {
                         <div>
                           <IconButton
                             aria-label="verify"
+                            onClick={handleClickOpen}
                             className={classes.iconBtn}>
                             <CheckCircleIcon
                               style={{ color: colors.green[600] }}
@@ -223,6 +291,7 @@ const UsersTable = props => {
                           </IconButton>
                           <IconButton
                             aria-label="not"
+                            onClick={handleClickOpenNot}
                             className={classes.iconBtn}>
                             <CancelRoundedIcon
                               style={{ color: colors.red[600] }}
@@ -243,6 +312,116 @@ const UsersTable = props => {
                           </IconButton>
                         </div>
                       )}
+
+                      <Dialog
+                        open={open}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-slide-title"
+                        aria-describedby="alert-dialog-slide-description">
+                        <DialogTitle id="alert-dialog-slide-title">
+                          {'Are you sure to verify ' + user.name + '?'}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-slide-description">
+                            Verifying this data means you acknowledge that this
+                            data is valid.
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button
+                            onClick={handleClose}
+                            style={{ color: colors.red[600] }}>
+                            No
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              toggleVerifiedOwner({
+                                variables: {
+                                  id: user.id
+                                },
+                                optimisticResponse: true,
+                                // update: cache => {
+                                //   const exitingOwner = cache.readQuery({
+                                //     query: getAllOwners
+                                //   });
+                                //   const newOwner = exitingOwner.users.map(t => {
+                                //     if (t.id === user.id) {
+                                //       return {
+                                //         ...t,
+                                //         account_status: 'verified'
+                                //       };
+                                //     } else {
+                                //       return t;
+                                //     }
+                                //   });
+                                //   cache.writeQuery({
+                                //     query: getAllOwners,
+                                //     data: { users: newOwner }
+                                //   });
+                                // }
+                              });
+                              setOpen(false);
+                              setOpenNot(false);
+                              setAlertSuccess(true);
+                            }}
+                            style={{ color: colors.green[600] }}>
+                            Yes
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                      <Dialog
+                        open={openNot}
+                        TransitionComponent={Transition}
+                        keepMounted
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-slide-title"
+                        aria-describedby="alert-dialog-slide-description">
+                        <DialogTitle id="alert-dialog-slide-title">
+                          {'Are you sure to refuse data ' + user.name + '?'}
+                        </DialogTitle>
+                        <DialogActions>
+                          <Button
+                            onClick={handleClose}
+                            style={{ color: colors.red[600] }}>
+                            No
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              toggleNotVerified({
+                                variables: {
+                                  id: user.id
+                                },
+                                optimisticResponse: true,
+                                // update: cache => {
+                                //   const exitingOwner = cache.readQuery({
+                                //     query: getAllOwners
+                                //   });
+                                //   const newOwner = exitingOwner.users.map(t => {
+                                //     if (t.id === user.id) {
+                                //       return {
+                                //         ...t,
+                                //         account_status: 'not'
+                                //       };
+                                //     } else {
+                                //       return t;
+                                //     }
+                                //   });
+                                //   cache.writeQuery({
+                                //     query: getAllOwners,
+                                //     data: { users: newOwner }
+                                //   });
+                                // }
+                              });
+                              setOpenNot(false);
+                              setAlertFailed(true);
+                            }}
+                            style={{ color: colors.green[600] }}>
+                            Yes
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
                     </TableCell>
                   </TableRow>
                 ))}
