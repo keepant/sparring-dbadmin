@@ -1,8 +1,11 @@
 import gql from 'graphql-tag';
 
 export const getAllOwners = gql`
-  query getAllOwners{
-    owners(order_by: { created_at: desc }) {
+  query getAllOwners {
+    owners(
+      where: { account_status: { _neq: "not" } }
+      order_by: { created_at: desc }
+    ) {
       id
       name
       email

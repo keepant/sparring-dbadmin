@@ -212,14 +212,37 @@ const UsersTable = props => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <IconButton
-                        aria-label="verify"
-                        className={classes.iconBtn}>
-                        <CheckCircleIcon style={{ color: colors.green[600] }} />
-                      </IconButton>
-                      <IconButton aria-label="not" className={classes.iconBtn}>
-                        <CancelRoundedIcon style={{ color: colors.red[600] }} />
-                      </IconButton>
+                      {user.account_status === 'process' && (
+                        <div>
+                          <IconButton
+                            aria-label="verify"
+                            className={classes.iconBtn}>
+                            <CheckCircleIcon
+                              style={{ color: colors.green[600] }}
+                            />
+                          </IconButton>
+                          <IconButton
+                            aria-label="not"
+                            className={classes.iconBtn}>
+                            <CancelRoundedIcon
+                              style={{ color: colors.red[600] }}
+                            />
+                          </IconButton>
+                        </div>
+                      )}
+
+                      {user.account_status === 'verified' && (
+                        <div>
+                          <IconButton
+                            aria-label="verify"
+                            className={classes.iconBtn}
+                            disabled>
+                            <CheckCircleIcon
+                              style={{ color: colors.green[600] }}
+                            />
+                          </IconButton>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

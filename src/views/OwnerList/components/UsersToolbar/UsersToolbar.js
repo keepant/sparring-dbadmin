@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-
-import { SearchInput } from 'components';
+import { Typography } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -15,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   },
   searchInput: {
     marginRight: theme.spacing(1)
-  }
+  },
 }));
 
 const UsersToolbar = props => {
@@ -24,15 +23,11 @@ const UsersToolbar = props => {
   const classes = useStyles();
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.row}>
-        <SearchInput
-          className={classes.searchInput}
-          placeholder="Search user"
-        />
+        <Typography className={classes.name} variant="h4">
+          Owner need to verify
+        </Typography>
       </div>
     </div>
   );
