@@ -7,6 +7,10 @@ import { AppBar, Toolbar, Badge, Hidden, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
+import firebase from 'firebase/app';
+import "firebase/auth";
+import { withRouter } from 'react-router-dom';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -21,11 +25,23 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Topbar = props => {
+  const { history } = props;
   const { className, onSidebarOpen, ...rest } = props;
 
   const classes = useStyles();
 
   const [notifications] = useState([]);
+  var store = require('store');
+
+  const handleOnClick = () => {
+    firebase.auth().signOut().then(function() {
+      console.log("Logout success");
+      store.clearAll();
+      history.replace('/sign-in');
+    }).catch(function(e) {
+      console.log("cannot logout. error: "+e)
+    })
+  }
 
   return (
     <AppBar
@@ -33,7 +49,7 @@ const Topbar = props => {
       className={clsx(classes.root, className)}
     >
       <Toolbar>
-        <RouterLink to="/">
+        <RouterLink to="/dashboard">
           <img
             alt="Logo"
             src="/images/logos/logo-white.svg"
@@ -50,9 +66,10 @@ const Topbar = props => {
               <NotificationsIcon />
             </Badge>
           </IconButton>
-          <IconButton
+          <IconButton 
             className={classes.signOutButton}
             color="inherit"
+            onClick={handleOnClick}
           >
             <InputIcon />
           </IconButton>
@@ -72,7 +89,9 @@ const Topbar = props => {
 
 Topbar.propTypes = {
   className: PropTypes.string,
-  onSidebarOpen: PropTypes.func
+  onSidebarOpen: PropTypes.func,
+  history: PropTypes.object
 };
 
-export default Topbar;
+
+export default withRouter(Topbar);

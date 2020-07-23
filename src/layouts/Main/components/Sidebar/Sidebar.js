@@ -47,17 +47,17 @@ const Sidebar = props => {
     },
     {
       title: 'Owner Verification',
-      href: '/products',
+      href: '/owners',
       icon: <VerifiedUser />
     },
     {
       title: 'Send Notification',
-      href: '/products',
+      href: '/notification',
       icon: <NotificationsActiveIcon />
     },
     {
       title: 'Facility',
-      href: '/products',
+      href: '/facility',
       icon: <PublicIcon />
     },
     {

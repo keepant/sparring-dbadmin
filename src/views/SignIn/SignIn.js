@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link as RouterLink, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Grid,
-  Button,
-  IconButton,
-  TextField,
-  Link,
-  Typography
-} from '@material-ui/core';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
-import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
+import { Grid, Button, TextField, Typography } from '@material-ui/core';
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/database';
+import { SemipolarLoading } from 'react-loadingg';
 
 const schema = {
   email: {
@@ -147,10 +141,6 @@ const SignIn = props => {
     }));
   }, [formState.values]);
 
-  const handleBack = () => {
-    history.goBack();
-  };
-
   const handleChange = event => {
     event.persist();
 
@@ -170,9 +160,63 @@ const SignIn = props => {
     }));
   };
 
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  var store = require('store');
+
   const handleSignIn = event => {
     event.preventDefault();
-    history.push('/');
+    setLoading(true);
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(
+        formState.values.email,
+        formState.values.password
+      )
+      .then(function(result) {
+        console.log('login success');
+
+        firebase.auth().onAuthStateChanged(async user => {
+          if (user) {
+            const token = await user.getIdToken();
+            const idTokenResult = await user.getIdTokenResult();
+            const hasuraClaim =
+              idTokenResult.claims['https://hasura.io/jwt/claims'];
+
+            if (hasuraClaim) {
+              console.log(user.uid);
+              store.set('token', token);
+              store.set('userId', user.uid);
+              console.log(
+                'Token: ' +
+                  token +
+                  ' IDtoken: ' +
+                  idTokenResult +
+                  ' hasura: ' +
+                  hasuraClaim
+              );
+              history.replace('/dashboard');
+            } else {
+              // Check if refresh is required.
+              const metadataRef = firebase
+                .database()
+                .ref('metadata/' + user.uid + '/refreshTime');
+
+              metadataRef.on('value', async data => {
+                if (!data.exists) return;
+                // Force refresh to pick up the latest custom claims changes.
+                await user.getIdToken(true);
+              });
+            }
+          }
+        });
+
+        //console.log(result);
+      })
+      .catch(function(e) {
+        console.log('error code: ' + e.code + '\nmessage: ' + e.message);
+        setError(e.message);
+      });
   };
 
   const hasError = field =>
@@ -180,105 +224,35 @@ const SignIn = props => {
 
   return (
     <div className={classes.root}>
-      <Grid
-        className={classes.grid}
-        container
-      >
-        <Grid
-          className={classes.quoteContainer}
-          item
-          lg={5}
-        >
+      { loading && <SemipolarLoading />}
+      <Grid className={classes.grid} container>
+        <Grid className={classes.quoteContainer} item lg={5}>
           <div className={classes.quote}>
             <div className={classes.quoteInner}>
-              <Typography
-                className={classes.quoteText}
-                variant="h1"
-              >
+              <Typography className={classes.quoteText} variant="h1">
                 Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
                 they sold out High Life.
               </Typography>
               <div className={classes.person}>
-                <Typography
-                  className={classes.name}
-                  variant="body1"
-                >
+                <Typography className={classes.name} variant="body1">
                   Takamaru Ayako
                 </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
+                <Typography className={classes.bio} variant="body2">
                   Manager at inVision
                 </Typography>
               </div>
             </div>
           </div>
         </Grid>
-        <Grid
-          className={classes.content}
-          item
-          lg={7}
-          xs={12}
-        >
+        <Grid className={classes.content} item lg={7} xs={12}>
           <div className={classes.content}>
-            <div className={classes.contentHeader}>
-              <IconButton onClick={handleBack}>
-                <ArrowBackIcon />
-              </IconButton>
-            </div>
+            <div className={classes.contentHeader}></div>
             <div className={classes.contentBody}>
-              <form
-                className={classes.form}
-                onSubmit={handleSignIn}
-              >
-                <Typography
-                  className={classes.title}
-                  variant="h2"
-                >
+              <form className={classes.form} onSubmit={handleSignIn}>
+                <Typography className={classes.title} variant="h2">
                   Sign in
                 </Typography>
-                <Typography
-                  color="textSecondary"
-                  gutterBottom
-                >
-                  Sign in with social media
-                </Typography>
-                <Grid
-                  className={classes.socialButtons}
-                  container
-                  spacing={2}
-                >
-                  <Grid item>
-                    <Button
-                      color="primary"
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained"
-                    >
-                      <FacebookIcon className={classes.socialIcon} />
-                      Login with Facebook
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button
-                      onClick={handleSignIn}
-                      size="large"
-                      variant="contained"
-                    >
-                      <GoogleIcon className={classes.socialIcon} />
-                      Login with Google
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Typography
-                  align="center"
-                  className={classes.sugestion}
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  or login with email address
-                </Typography>
+
                 <TextField
                   className={classes.textField}
                   error={hasError('email')}
@@ -314,23 +288,10 @@ const SignIn = props => {
                   fullWidth
                   size="large"
                   type="submit"
-                  variant="contained"
-                >
+                  variant="contained">
                   Sign in now
                 </Button>
-                <Typography
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  Don't have an account?{' '}
-                  <Link
-                    component={RouterLink}
-                    to="/sign-up"
-                    variant="h6"
-                  >
-                    Sign up
-                  </Link>
-                </Typography>
+                <span>{error}</span>
               </form>
             </div>
           </div>
