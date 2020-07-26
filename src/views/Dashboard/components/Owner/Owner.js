@@ -42,19 +42,19 @@ const Owner = props => {
     return <SemipolarLoading />;
   }
 
-  if (error) {
-    if (
-      error.message.includes('GraphQL error: Could not verify JWT: JWSError')
-    ) {
-      history.replace('/');
-    }
+  // if (error) {
+  //   if (
+  //     error.message.includes('GraphQL error: Could not verify JWT: JWSError')
+  //   ) {
+  //     history.replace('/');
+  //   }
 
-    if (error.message.includes('Network error: Failed to fetch')) {
-      setNetwork(true);
-    }
+  //   if (error.message.includes('Network error: Failed to fetch')) {
+  //     setNetwork(true);
+  //   }
 
-    return <div></div>;
-  }
+  //   return <div></div>;
+  // }
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
