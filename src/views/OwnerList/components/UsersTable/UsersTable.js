@@ -320,26 +320,26 @@ const UsersTable = props => {
                                     variables: {
                                       id: user.id
                                     },
-                                    optimisticResponse: true
-                                    // update: cache => {
-                                    //   const exitingOwner = cache.readQuery({
-                                    //     query: getAllOwners
-                                    //   });
-                                    //   const newOwner = exitingOwner.users.map(t => {
-                                    //     if (t.id === user.id) {
-                                    //       return {
-                                    //         ...t,
-                                    //         account_status: 'verified'
-                                    //       };
-                                    //     } else {
-                                    //       return t;
-                                    //     }
-                                    //   });
-                                    //   cache.writeQuery({
-                                    //     query: getAllOwners,
-                                    //     data: { users: newOwner }
-                                    //   });
-                                    // }
+                                    optimisticResponse: true,
+                                    update: cache => {
+                                      const exitingOwner = cache.readQuery({
+                                        query: getAllOwners
+                                      });
+                                      const newOwner = exitingOwner.owners.map(t => {
+                                        if (t.id === user.id) {
+                                          return {
+                                            ...t,
+                                            account_status: 'verified'
+                                          };
+                                        } else {
+                                          return t;
+                                        }
+                                      });
+                                      cache.writeQuery({
+                                        query: getAllOwners,
+                                        data: { owners: newOwner }
+                                      });
+                                    }
                                   });
                                   setOpen(false);
                                   setOpenNot(false);
