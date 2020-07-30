@@ -5,7 +5,7 @@ import validate from 'validate.js';
 import { makeStyles } from '@material-ui/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { addNotification } from 'graphql/mutations/notification';
-//import { getNotification } from 'graphql/queries/notification';
+import { getNotification } from 'graphql/queries/notification';
 import Alert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
@@ -44,7 +44,7 @@ const schema = {
   }
 };
 
-const InputFacility = props => {
+const InputNotifications = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
@@ -89,25 +89,25 @@ const InputFacility = props => {
     }));
   };
 
-  // const updateCache = (cache, { data }) => {
-  //   const existingFacility = cache.readQuery({
-  //     query: getCourtFacilities
-  //   });
-  //   const newFacility = data.insert_court_facilities.affected_rows[1];
-  //   cache.writeQuery({
-  //     query: getCourtFacilities,
-  //     data: {
-  //       court_facilities: [newFacility, ...existingFacility.court_facilities]
-  //     }
-  //   });
-  // };
+  const updateCache = (cache, { data }) => {
+    const existingNotifications = cache.readQuery({
+      query: getNotification
+    });
+    const newNotifications = data.insert_notifications.returning[0];
+    cache.writeQuery({
+      query: getNotification,
+      data: {
+        notifications: [newNotifications, ...existingNotifications.notifications]
+      }
+    });
+  };
 
   const resetInput = () => {
     formState.values.name = '';
   };
 
   const [addNotif] = useMutation(addNotification, {
-    //update: updateCache,
+    update: updateCache,
     onCompleted: resetInput
   });
 
@@ -238,8 +238,8 @@ const InputFacility = props => {
   );
 };
 
-InputFacility.propTypes = {
+InputNotifications.propTypes = {
   className: PropTypes.string
 };
 
-export default InputFacility;
+export default InputNotifications;

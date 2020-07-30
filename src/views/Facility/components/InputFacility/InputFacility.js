@@ -83,7 +83,7 @@ const InputFacility = props => {
     const existingFacility = cache.readQuery({
       query: getCourtFacilities
     });
-    const newFacility = data.insert_court_facilities.affected_rows[1];
+    const newFacility = data.insert_court_facilities.returning[0];
     cache.writeQuery({
       query: getCourtFacilities,
       data: {

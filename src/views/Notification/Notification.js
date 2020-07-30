@@ -34,10 +34,10 @@ const Notification = () => {
   return (
     <div className={classes.root}>
       <Grid container spacing={4}>
-        <Grid item lg={6} md={6} xl={4} xs={12}>
+        <Grid item lg={5} md={6} xl={4} xs={12}>
           <InputNotification />
         </Grid>
-        <Grid item lg={6} md={6} xl={8} xs={12}>
+        <Grid item lg={7} md={6} xl={8} xs={12}>
           <TableNotification notifications={notification} />
         </Grid>
       </Grid>
