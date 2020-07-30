@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Divider, Drawer } from '@material-ui/core';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
+// import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import VerifiedUser from '@material-ui/icons/VerifiedUser';
 import NotificationsActiveIcon from '@material-ui/icons/NotificationsActive';
 import PublicIcon from '@material-ui/icons/Public';
@@ -60,11 +60,11 @@ const Sidebar = props => {
       href: '/facility',
       icon: <PublicIcon />
     },
-    {
-      title: 'Account',
-      href: '/account',
-      icon: <AccountBoxIcon />
-    },
+    // {
+    //   title: 'Account',
+    //   href: '/account',
+    //   icon: <AccountBoxIcon />
+    // },
   ];
 
   return (

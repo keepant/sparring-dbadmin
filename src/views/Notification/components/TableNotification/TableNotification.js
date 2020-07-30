@@ -67,7 +67,9 @@ const TableNotification = props => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Notification Title</TableCell>
+                  <TableCell>Title</TableCell>
+                  <TableCell>Content</TableCell>
+                  <TableCell>Send to</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -80,6 +82,16 @@ const TableNotification = props => {
                     <TableCell>
                       <div className={classes.nameContainer}>
                         <Typography variant="body1">{notification.title}</Typography>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={classes.nameContainer}>
+                        <Typography variant="body1">{notification.content}</Typography>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className={classes.nameContainer}>
+                        <Typography variant="body1">{notification.app.toUpperCase()}</Typography>
                       </div>
                     </TableCell>
                   </TableRow>

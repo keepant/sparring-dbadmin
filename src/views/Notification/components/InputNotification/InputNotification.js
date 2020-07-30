@@ -5,7 +5,7 @@ import validate from 'validate.js';
 import { makeStyles } from '@material-ui/styles';
 import { useMutation } from '@apollo/react-hooks';
 import { addNotification } from 'graphql/mutations/notification';
-//import { getNotification } from 'graphql/queries/notification';
+import { getNotification } from 'graphql/queries/notification';
 import Alert from '@material-ui/lab/Alert';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
@@ -44,7 +44,7 @@ const schema = {
   }
 };
 
-const InputFacility = props => {
+const InputNotifications = props => {
   const { className, ...rest } = props;
 
   const classes = useStyles();
@@ -89,27 +89,76 @@ const InputFacility = props => {
     }));
   };
 
-  // const updateCache = (cache, { data }) => {
-  //   const existingFacility = cache.readQuery({
-  //     query: getCourtFacilities
-  //   });
-  //   const newFacility = data.insert_court_facilities.affected_rows[1];
-  //   cache.writeQuery({
-  //     query: getCourtFacilities,
-  //     data: {
-  //       court_facilities: [newFacility, ...existingFacility.court_facilities]
-  //     }
-  //   });
-  // };
+  const states = [
+    {
+      value: 'sparring',
+      label: 'Select app'
+    },
+    {
+      value: 'sparring',
+      label: 'Sparring App'
+    },
+    {
+      value: 'owner',
+      label: 'Sparring Owner App'
+    }
+  ];
+
+  const updateCache = (cache, { data }) => {
+    const existingNotifications = cache.readQuery({
+      query: getNotification
+    });
+    const newNotifications = data.insert_notifications.returning[0];
+    cache.writeQuery({
+      query: getNotification,
+      data: {
+        notifications: [
+          newNotifications,
+          ...existingNotifications.notifications
+        ]
+      }
+    });
+  };
 
   const resetInput = () => {
     formState.values.name = '';
   };
 
   const [addNotif] = useMutation(addNotification, {
-    //update: updateCache,
+    update: updateCache,
     onCompleted: resetInput
   });
+
+  var sendNotificationOwneer = function(data) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: 'Basic NjIyN2I2NmItMTI0My00NmJiLTlmODMtMDUxNjJhNjA4Yjdj'
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers
+    };
+
+    var https = require('https');
+    var req = https.request(options, function(res) {
+      res.on('data', function(data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function(e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  };
 
   var sendNotification = function(data) {
     var headers = {
@@ -167,20 +216,34 @@ const InputFacility = props => {
           addNotif({
             variables: {
               title: formState.values.title,
-              content: formState.values.content
+              content: formState.values.content,
+              app: formState.values.state
             }
           });
 
           setOpen(true);
 
-          var message = {
-            app_id: '1a92dc26-0954-4d02-aa1d-a8af75f218bb',
-            headings: { en: formState.values.title },
-            contents: { en: formState.values.content },
-            included_segments: ['All']
-          };
-        
-          sendNotification(message);
+          console.log(formState.values.state);
+
+          var message;
+
+          if (formState.values.state === 'sparring') {
+            message = {
+              app_id: '1a92dc26-0954-4d02-aa1d-a8af75f218bb',
+              headings: { en: formState.values.title },
+              contents: { en: formState.values.content },
+              included_segments: ['All']
+            };
+            sendNotification(message);
+          } else {
+            message = {
+              app_id: '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
+              headings: { en: formState.values.title },
+              contents: { en: formState.values.content },
+              included_segments: ['All']
+            };
+            sendNotificationOwneer(message);
+          }
 
           formState.values.title = '';
           formState.values.content = '';
@@ -220,6 +283,24 @@ const InputFacility = props => {
                 multiline
                 rows={5}
               />
+              <br />
+              <br />
+              <TextField
+                fullWidth
+                label="Select App"
+                name="state"
+                type="state"
+                onChange={handleChange}
+                select
+                SelectProps={{ native: true }}
+                value={formState.values.state}
+                variant="outlined">
+                {states.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
             </Grid>
           </Grid>
         </CardContent>
@@ -238,8 +319,8 @@ const InputFacility = props => {
   );
 };
 
-InputFacility.propTypes = {
+InputNotifications.propTypes = {
   className: PropTypes.string
 };
 
-export default InputFacility;
+export default InputNotifications;

@@ -1,9 +1,15 @@
 import gql from 'graphql-tag';
 
 export const addNotification = gql`
-  mutation addNotification(\$title: String!, \$content: String!){
-    insert_notifications(objects: { title: \$title, content: \$content }) {
-      affected_rows
+  mutation addNotification(\$title: String!, \$content: String!, \$app: String!){
+    insert_notifications(objects: { title: \$title, content: \$content, app: \$app }) {
+      returning {
+        id
+        title
+        content
+        created_at
+        app
+      }
     }
   }
 `;

@@ -8,7 +8,7 @@ import {
   Dashboard as DashboardView,
   OwnerList as OwnerListView,
   Icons as IconsView,
-  Account as AccountView,
+  // Account as AccountView,
   Settings as SettingsView,
   SignUp as SignUpView,
   SignIn as SignInView,
@@ -55,12 +55,12 @@ const Routes = () => {
         layout={MainLayout}
         path="/facility"
       />
-      <RouteWithLayout
+      {/* <RouteWithLayout
         component={AccountView}
         exact
         layout={MainLayout}
         path="/account"
-      />
+      /> */}
       <RouteWithLayout
         component={SettingsView}
         exact

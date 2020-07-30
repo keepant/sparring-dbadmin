@@ -47,7 +47,7 @@ const TotalUsers = props => {
   const { className, history, ...rest } = props;
 
   const classes = useStyles();
-  const { loading, error, data } = useQuery(getCountUsers);
+  const { loading, data } = useQuery(getCountUsers);
 
   if (loading) {
     return <SemipolarLoading />;
