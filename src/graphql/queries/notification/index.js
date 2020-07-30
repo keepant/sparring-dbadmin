@@ -7,6 +7,7 @@ export const getNotification = gql`
       title
       content
       created_at
+      app
     }
   }
 `;

@@ -89,6 +89,21 @@ const InputNotifications = props => {
     }));
   };
 
+  const states = [
+    {
+      value: 'sparring',
+      label: 'Select app'
+    },
+    {
+      value: 'sparring',
+      label: 'Sparring App'
+    },
+    {
+      value: 'owner',
+      label: 'Sparring Owner App'
+    }
+  ];
+
   const updateCache = (cache, { data }) => {
     const existingNotifications = cache.readQuery({
       query: getNotification
@@ -97,7 +112,10 @@ const InputNotifications = props => {
     cache.writeQuery({
       query: getNotification,
       data: {
-        notifications: [newNotifications, ...existingNotifications.notifications]
+        notifications: [
+          newNotifications,
+          ...existingNotifications.notifications
+        ]
       }
     });
   };
@@ -110,6 +128,37 @@ const InputNotifications = props => {
     update: updateCache,
     onCompleted: resetInput
   });
+
+  var sendNotificationOwneer = function(data) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: 'Basic NjIyN2I2NmItMTI0My00NmJiLTlmODMtMDUxNjJhNjA4Yjdj'
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers
+    };
+
+    var https = require('https');
+    var req = https.request(options, function(res) {
+      res.on('data', function(data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function(e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  };
 
   var sendNotification = function(data) {
     var headers = {
@@ -167,20 +216,34 @@ const InputNotifications = props => {
           addNotif({
             variables: {
               title: formState.values.title,
-              content: formState.values.content
+              content: formState.values.content,
+              app: formState.values.state
             }
           });
 
           setOpen(true);
 
-          var message = {
-            app_id: '1a92dc26-0954-4d02-aa1d-a8af75f218bb',
-            headings: { en: formState.values.title },
-            contents: { en: formState.values.content },
-            included_segments: ['All']
-          };
-        
-          sendNotification(message);
+          console.log(formState.values.state);
+
+          var message;
+
+          if (formState.values.state === 'sparring') {
+            message = {
+              app_id: '1a92dc26-0954-4d02-aa1d-a8af75f218bb',
+              headings: { en: formState.values.title },
+              contents: { en: formState.values.content },
+              included_segments: ['All']
+            };
+            sendNotification(message);
+          } else {
+            message = {
+              app_id: '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
+              headings: { en: formState.values.title },
+              contents: { en: formState.values.content },
+              included_segments: ['All']
+            };
+            sendNotificationOwneer(message);
+          }
 
           formState.values.title = '';
           formState.values.content = '';
@@ -220,6 +283,24 @@ const InputNotifications = props => {
                 multiline
                 rows={5}
               />
+              <br />
+              <br />
+              <TextField
+                fullWidth
+                label="Select App"
+                name="state"
+                type="state"
+                onChange={handleChange}
+                select
+                SelectProps={{ native: true }}
+                value={formState.values.state}
+                variant="outlined">
+                {states.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </TextField>
             </Grid>
           </Grid>
         </CardContent>
