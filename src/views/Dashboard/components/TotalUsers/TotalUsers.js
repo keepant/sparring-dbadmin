@@ -53,16 +53,16 @@ const TotalUsers = props => {
     return <SemipolarLoading />;
   }
 
-  // if (error) {
-  //   console.error(error);
-  //   if (
-  //     error.message.includes('GraphQL error: Could not verify JWT: JWSError')
-  //   ) {
-  //     history.replace('/');
-  //   }
+  if (error) {
+    console.error(error);
+    if (
+      error.message.includes('GraphQL error: Could not verify JWT: JWSError')
+    ) {
+      history.replace('/');
+    }
 
-  //   return <div>{error.message}</div>;
-  // }
+    return <div>{error.message}</div>;
+  }
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
