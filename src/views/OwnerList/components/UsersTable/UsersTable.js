@@ -30,6 +30,7 @@ import { CircleToBlockLoading } from 'react-loadingg';
 import { useMutation } from '@apollo/react-hooks';
 import { verifyOwner, notVerifyOwner } from 'graphql/mutations/owner';
 import { getAllOwners } from 'graphql/queries/owner';
+import { sendVerifyNotif } from 'graphql/mutations/notification';
 import {
   Card,
   CardActions,
@@ -155,6 +156,8 @@ const UsersTable = props => {
     req.write(JSON.stringify(data));
     req.end();
   };
+
+  const [sendNotif] = useMutation(sendVerifyNotif);
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -378,11 +381,22 @@ const UsersTable = props => {
                                   setOpenNot(false);
                                   setAlertSuccess(true);
 
+                                  let title = 'Your account is verified!';
+                                  let content = 'Congratulations! Your account successfully verified. Now you can freely use our app feature.';
+
+                                  sendNotif({
+                                    variables: {
+                                      title: title,
+                                      content: content,
+                                      segment: user.id
+                                    }
+                                  });
+
                                   let message = {
                                     app_id:
                                       '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
-                                    headings: { en: 'Your account is verified!' },
-                                    contents: { en: 'Congratulations! Your account successfully verified. Now you can freely use our app feature.' },
+                                    headings: { en: title },
+                                    contents: { en: content },
                                     include_external_user_ids: [user.id]
                                   };
                                   sendNotificationOwneer(message);
@@ -448,11 +462,22 @@ const UsersTable = props => {
                                   setOpenNot(false);
                                   setAlertFailed(true);
 
+                                  let title = 'Oh no! Your accout failed to verify.';
+                                  let content = 'Your account currently cannot be verifed. But you can try to verified your account again any time.';
+
+                                  sendNotif({
+                                    variables: {
+                                      title: title,
+                                      content: content,
+                                      segment: user.id
+                                    }
+                                  });
+
                                   let message = {
                                     app_id:
                                       '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
-                                    headings: { en: 'Oh no! Your accout failed to verify.' },
-                                    contents: { en: 'Your account currently cannot be verifed. But you can try to verified your account again any time.' },
+                                    headings: { en: title },
+                                    contents: { en: content },
                                     include_external_user_ids: [user.id]
                                   };
                                   sendNotificationOwneer(message);
