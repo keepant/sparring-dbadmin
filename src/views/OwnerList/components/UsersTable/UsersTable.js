@@ -385,7 +385,7 @@ const UsersTable = props => {
                                       const exitingOwner = cache.readQuery({
                                         query: getAllOwners
                                       });
-                                      const newOwner = exitingOwner.users.map(
+                                      const newOwner = exitingOwner.owners.map(
                                         t => {
                                           if (t.id === user.id) {
                                             return {
@@ -399,7 +399,7 @@ const UsersTable = props => {
                                       );
                                       cache.writeQuery({
                                         query: getAllOwners,
-                                        data: { users: newOwner }
+                                        data: { owners: newOwner }
                                       });
                                     }
                                   });
