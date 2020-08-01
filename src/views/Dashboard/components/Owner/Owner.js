@@ -35,8 +35,8 @@ const Owner = props => {
   const { className, history, ...rest } = props;
 
   const classes = useStyles();
-  const [network] = useState(false);
-  const { loading, data } = useQuery(getCountOwners);
+  const [network, setNetwork] = useState(false);
+  const { loading, data, error } = useQuery(getCountOwners);
 
   if (loading) {
     return <SemipolarLoading />;
