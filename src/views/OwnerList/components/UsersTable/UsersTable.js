@@ -30,6 +30,7 @@ import { CircleToBlockLoading } from 'react-loadingg';
 import { useMutation } from '@apollo/react-hooks';
 import { verifyOwner, notVerifyOwner } from 'graphql/mutations/owner';
 import { getAllOwners } from 'graphql/queries/owner';
+import { sendVerifyNotif } from 'graphql/mutations/notification';
 import {
   Card,
   CardActions,
@@ -124,6 +125,39 @@ const UsersTable = props => {
 
   const [toggleVerifiedOwner] = useMutation(verifyOwner);
   const [toggleNotVerified] = useMutation(notVerifyOwner);
+
+  var sendNotificationOwneer = function(data) {
+    var headers = {
+      'Content-Type': 'application/json; charset=utf-8',
+      Authorization: 'Basic NjIyN2I2NmItMTI0My00NmJiLTlmODMtMDUxNjJhNjA4Yjdj'
+    };
+
+    var options = {
+      host: 'onesignal.com',
+      port: 443,
+      path: '/api/v1/notifications',
+      method: 'POST',
+      headers: headers
+    };
+
+    var https = require('https');
+    var req = https.request(options, function(res) {
+      res.on('data', function(data) {
+        console.log('Response:');
+        console.log(JSON.parse(data));
+      });
+    });
+
+    req.on('error', function(e) {
+      console.log('ERROR:');
+      console.log(e);
+    });
+
+    req.write(JSON.stringify(data));
+    req.end();
+  };
+
+  const [sendNotif] = useMutation(sendVerifyNotif);
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -325,16 +359,18 @@ const UsersTable = props => {
                                       const exitingOwner = cache.readQuery({
                                         query: getAllOwners
                                       });
-                                      const newOwner = exitingOwner.owners.map(t => {
-                                        if (t.id === user.id) {
-                                          return {
-                                            ...t,
-                                            account_status: 'verified'
-                                          };
-                                        } else {
-                                          return t;
+                                      const newOwner = exitingOwner.owners.map(
+                                        t => {
+                                          if (t.id === user.id) {
+                                            return {
+                                              ...t,
+                                              account_status: 'verified'
+                                            };
+                                          } else {
+                                            return t;
+                                          }
                                         }
-                                      });
+                                      );
                                       cache.writeQuery({
                                         query: getAllOwners,
                                         data: { owners: newOwner }
@@ -344,6 +380,26 @@ const UsersTable = props => {
                                   setOpen(false);
                                   setOpenNot(false);
                                   setAlertSuccess(true);
+
+                                  let title = 'Your account is verified!';
+                                  let content = 'Congratulations! Your account successfully verified. Now you can freely use our app feature.';
+
+                                  sendNotif({
+                                    variables: {
+                                      title: title,
+                                      content: content,
+                                      segment: user.id
+                                    }
+                                  });
+
+                                  let message = {
+                                    app_id:
+                                      '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
+                                    headings: { en: title },
+                                    contents: { en: content },
+                                    include_external_user_ids: [user.id]
+                                  };
+                                  sendNotificationOwneer(message);
                                 }}
                                 style={{ color: colors.green[600] }}>
                                 Yes
@@ -405,6 +461,26 @@ const UsersTable = props => {
                                   });
                                   setOpenNot(false);
                                   setAlertFailed(true);
+
+                                  let title = 'Oh no! Your accout failed to verify.';
+                                  let content = 'Your account currently cannot be verifed. But you can try to verified your account again any time.';
+
+                                  sendNotif({
+                                    variables: {
+                                      title: title,
+                                      content: content,
+                                      segment: user.id
+                                    }
+                                  });
+
+                                  let message = {
+                                    app_id:
+                                      '8e178fec-85ba-4f81-98c2-84cf1ecc954c',
+                                    headings: { en: title },
+                                    contents: { en: content },
+                                    include_external_user_ids: [user.id]
+                                  };
+                                  sendNotificationOwneer(message);
                                 }}
                                 style={{ color: colors.green[600] }}>
                                 Yes
