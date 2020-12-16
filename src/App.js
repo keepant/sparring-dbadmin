@@ -34,7 +34,7 @@ var store = require('store');
 const createApolloClient = authToken => {
   return new ApolloClient({
     link: new HttpLink({
-      uri: 'https://sparring-api.herokuapp.com/v1/graphql',
+      uri: 'https://sparring.herokuapp.com/v1/graphql',
       headers: {
         Authorization: `Bearer ${authToken}`
       }
