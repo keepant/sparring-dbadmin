@@ -13,3 +13,17 @@ export const addNotification = gql`
     }
   }
 `;
+
+export const sendVerifyNotif = gql`
+  mutation addNotification(\$title: String!, \$content: String!, \$segment: String!){
+    insert_notifications(objects: { title: \$title, content: \$content, app: "owner", segment: \$segment }) {
+      returning {
+        id
+        title
+        content
+        created_at
+        app
+      }
+    }
+  }
+`;
